@@ -1,6 +1,6 @@
 package fuzzes
 
-import avro "gopkg.in/avro.v0"
+import avro "github.com/kjuulh/go-avro"
 
 const ComplexSchemaRaw = `{
     "type": "record",

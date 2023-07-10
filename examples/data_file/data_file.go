@@ -18,7 +18,7 @@ package main
 import (
 	"fmt"
 
-	"gopkg.in/avro.v0"
+	"github.com/kjuulh/go-avro"
 )
 
 // Fields to map should be exported

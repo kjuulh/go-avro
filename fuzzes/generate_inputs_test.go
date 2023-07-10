@@ -8,7 +8,7 @@ import (
 	"math/rand"
 	"testing"
 
-	avro "gopkg.in/avro.v0"
+	avro "github.com/kjuulh/go-avro"
 )
 
 func TestGenerateSpecificComplexFuzz(t *testing.T) {

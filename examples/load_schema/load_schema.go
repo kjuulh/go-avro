@@ -18,7 +18,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"gopkg.in/avro.v0"
+	"github.com/kjuulh/go-avro"
 )
 
 func main() {

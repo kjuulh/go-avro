@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	avro "gopkg.in/avro.v0"
+	avro "github.com/kjuulh/go-avro"
 )
 
 var someSchema avro.Schema

@@ -13,7 +13,7 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/avro.v0"
+	"github.com/kjuulh/go-avro"
 )
 
 type schemas []string

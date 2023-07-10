@@ -3,8 +3,8 @@ package genericreader
 import (
 	"bytes"
 
-	avro "gopkg.in/avro.v0"
-	"gopkg.in/avro.v0/fuzzes"
+	avro "github.com/kjuulh/go-avro"
+	"github.com/kjuulh/go-avro/fuzzes"
 )
 
 var buf bytes.Buffer

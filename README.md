@@ -1,6 +1,6 @@
 # Apache Avro for Golang
 
-[![Build Status](https://travis-ci.org/go-avro/avro.svg?branch=master)](https://travis-ci.org/go-avro/avro) [![GoDoc](https://godoc.org/gopkg.in/avro.v0?status.svg)](https://godoc.org/gopkg.in/avro.v0)
+[![Build Status](https://travis-ci.org/go-avro/avro.svg?branch=master)](https://travis-ci.org/go-avro/avro) [![GoDoc](https://godoc.org/github.com/kjuulh/go-avro?status.svg)](https://godoc.org/github.com/kjuulh/go-avro)
 
 
 Support for decoding/encoding avro using both map-style access (GenericRecord) and to/from arbitrary Go structs (SpecificRecord).
@@ -11,12 +11,12 @@ This library started as a fork of `elodina/go-avro` but has now proceeded to bec
 
 Installation via go get:
 
-    go get gopkg.in/avro.v0
+    go get github.com/kjuulh/go-avro
 
 
 ## Documentation
 
- * [Read API/usage docs on Godoc](https://godoc.org/gopkg.in/avro.v0)
+ * [Read API/usage docs on Godoc](https://godoc.org/github.com/kjuulh/go-avro)
  * [Changelog](CHANGELOG.md)
 
 Some usage examples are located in [examples folder](https://github.com/go-avro/avro/tree/master/examples):
