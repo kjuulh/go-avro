@@ -27,8 +27,10 @@ func (i *schemas) Set(value string) error {
 	return nil
 }
 
-var schema schemas
-var output = flag.String("out", "", "Output file name.")
+var (
+	schema schemas
+	output = flag.String("out", "", "Output file name.")
+)
 
 func main() {
 	parseAndValidateArgs()
@@ -45,7 +47,7 @@ func main() {
 	checkErr(err)
 
 	createDirs()
-	err = ioutil.WriteFile(*output, []byte(code), 0664)
+	err = ioutil.WriteFile(*output, []byte(code), 0o664)
 	checkErr(err)
 }
 
@@ -68,7 +70,7 @@ func createDirs() {
 	index := strings.LastIndex(*output, "/")
 	if index != -1 {
 		path := (*output)[:index]
-		err := os.MkdirAll(path, 0777)
+		err := os.MkdirAll(path, 0o777)
 		checkErr(err)
 	}
 }

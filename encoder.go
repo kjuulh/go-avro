@@ -69,12 +69,14 @@ func newBinaryEncoder(buffer io.Writer) *binaryEncoder {
 
 // WriteNull writes a null value. Doesn't actually do anything in this implementation.
 func (be *binaryEncoder) WriteNull(_ interface{}) {
-	//do nothing
+	// do nothing
 }
 
 // The encodings of true and false, for reuse
-var encBoolTrue = []byte{0x01}
-var encBoolFalse = []byte{0x00}
+var (
+	encBoolTrue  = []byte{0x01}
+	encBoolFalse = []byte{0x00}
+)
 
 // WriteBoolean writes a boolean value.
 func (be *binaryEncoder) WriteBoolean(x bool) {

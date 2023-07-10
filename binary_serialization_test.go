@@ -6,8 +6,7 @@ import (
 	"testing"
 )
 
-//this makes sure the given value remains the same after encoding and decoding
-
+// this makes sure the given value remains the same after encoding and decoding
 const testTimes = 1000
 
 func TestNullSerialization(t *testing.T) {
@@ -107,7 +106,7 @@ func TestDoubleSerialization(t *testing.T) {
 
 func TestBytesSerialization(t *testing.T) {
 	for i := 1; i <= testTimes/10; i++ {
-		r := randomBytes(i) //randByteArray(i)
+		r := randomBytes(i) // randByteArray(i)
 		buf := &bytes.Buffer{}
 		NewBinaryEncoder(buf).WriteBytes(r)
 		if decoded, err := NewBinaryDecoder(buf.Bytes()).ReadBytes(); err != nil {
@@ -122,7 +121,7 @@ func TestBytesSerialization(t *testing.T) {
 
 func TestStringSerialization(t *testing.T) {
 	testPrimitiveSerialization(t, func(i int) interface{} {
-		return randomString(i) //randString(i, letters)
+		return randomString(i) // randString(i, letters)
 	}, func(r interface{}) (interface{}, error) {
 		buf := &bytes.Buffer{}
 		NewBinaryEncoder(buf).WriteString(r.(string))
@@ -158,7 +157,11 @@ func benchStringSerialization(b *testing.B, n int) {
 	}
 }
 
-func testPrimitiveSerialization(t *testing.T, random func(int) interface{}, serialize func(interface{}) (interface{}, error)) {
+func testPrimitiveSerialization(
+	t *testing.T,
+	random func(int) interface{},
+	serialize func(interface{}) (interface{}, error),
+) {
 	for i := 1; i <= testTimes; i++ {
 		r := random(i)
 		if decoded, err := serialize(r); err != nil {

@@ -54,8 +54,10 @@ func reflectBuildRi(t reflect.Type) *reflectInfo {
 	return rm
 }
 
-var reflectMap = make(map[reflect.Type]*reflectInfo)
-var reflectMapLock sync.RWMutex
+var (
+	reflectMap     = make(map[reflect.Type]*reflectInfo)
+	reflectMapLock sync.RWMutex
+)
 
 type reflectInfo struct {
 	names map[string][]int

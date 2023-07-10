@@ -7,8 +7,10 @@ import (
 	"github.com/kjuulh/go-avro/fuzzes"
 )
 
-var buf bytes.Buffer
-var reader = avro.NewDatumReader(fuzzes.ComplexSchema)
+var (
+	buf    bytes.Buffer
+	reader = avro.NewDatumReader(fuzzes.ComplexSchema)
+)
 
 func Fuzz(input []byte) int {
 	var dest *avro.GenericRecord

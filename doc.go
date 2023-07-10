@@ -1,15 +1,14 @@
 /*
 Package avro encodes/decodes avro schemas to your struct or a map.
 
-Overview
+# Overview
 
 Go-avro parses .avsc schemas from files and then lets you work with them.
 
 	schema, err := avro.ParseSchemaFile("person.avsc")
 	// important: handle err!
 
-
-Struct Mapping
+# Struct Mapping
 
 When using SpecificDecoder, the implementation uses struct tags to map avro
 messages into your struct. This helps because it makes schema evolution

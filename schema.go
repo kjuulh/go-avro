@@ -564,7 +564,8 @@ func (this *SchemaField) Prop(key string) (interface{}, bool) {
 
 // MarshalJSON serializes the given schema field as JSON.
 func (s *SchemaField) MarshalJSON() ([]byte, error) {
-	if s.Type.Type() == Null || (s.Type.Type() == Union && s.Type.(*UnionSchema).Types[0].Type() == Null) {
+	if s.Type.Type() == Null ||
+		(s.Type.Type() == Union && s.Type.(*UnionSchema).Types[0].Type() == Null) {
 		return json.Marshal(struct {
 			Name    string      `json:"name,omitempty"`
 			Doc     string      `json:"doc,omitempty"`
@@ -593,7 +594,13 @@ func (s *SchemaField) MarshalJSON() ([]byte, error) {
 
 // String returns a JSON representation of SchemaField.
 func (s *SchemaField) String() string {
-	return fmt.Sprintf("[SchemaField: Name: %s, Doc: %s, Default: %v, Type: %s]", s.Name, s.Doc, s.Default, s.Type)
+	return fmt.Sprintf(
+		"[SchemaField: Name: %s, Doc: %s, Default: %v, Type: %s]",
+		s.Name,
+		s.Doc,
+		s.Default,
+		s.Type,
+	)
 }
 
 // EnumSchema implements Schema and represents Avro enum type.
@@ -639,7 +646,7 @@ func (s *EnumSchema) Prop(key string) (interface{}, bool) {
 
 // Validate checks whether the given value is writeable to this schema.
 func (*EnumSchema) Validate(v reflect.Value) bool {
-	//TODO implement
+	// TODO implement
 	return true
 }
 
@@ -872,7 +879,9 @@ func (s *FixedSchema) Prop(key string) (interface{}, bool) {
 func (s *FixedSchema) Validate(v reflect.Value) bool {
 	v = dereference(v)
 
-	return (v.Kind() == reflect.Array || v.Kind() == reflect.Slice) && v.Type().Elem().Kind() == reflect.Uint8 && v.Len() == s.Size
+	return (v.Kind() == reflect.Array || v.Kind() == reflect.Slice) &&
+		v.Type().Elem().Kind() == reflect.Uint8 &&
+		v.Len() == s.Size
 }
 
 // MarshalJSON serializes the given schema as JSON.
@@ -1028,7 +1037,11 @@ func schemaByType(i interface{}, registry map[string]Schema, namespace string) (
 	return nil, ErrInvalidSchema
 }
 
-func parseEnumSchema(v map[string]interface{}, registry map[string]Schema, namespace string) (Schema, error) {
+func parseEnumSchema(
+	v map[string]interface{},
+	registry map[string]Schema,
+	namespace string,
+) (Schema, error) {
 	symbols := make([]string, len(v[schemaSymbolsField].([]interface{})))
 	for i, symbol := range v[schemaSymbolsField].([]interface{}) {
 		symbols[i] = symbol.(string)
@@ -1042,18 +1055,30 @@ func parseEnumSchema(v map[string]interface{}, registry map[string]Schema, names
 	return addSchema(getFullName(v[schemaNameField].(string), namespace), schema, registry), nil
 }
 
-func parseFixedSchema(v map[string]interface{}, registry map[string]Schema, namespace string) (Schema, error) {
+func parseFixedSchema(
+	v map[string]interface{},
+	registry map[string]Schema,
+	namespace string,
+) (Schema, error) {
 	size, ok := v[schemaSizeField].(float64)
 	if !ok {
 		return nil, ErrInvalidFixedSize
 	}
 
-	schema := &FixedSchema{Name: v[schemaNameField].(string), Size: int(size), Properties: getProperties(v)}
+	schema := &FixedSchema{
+		Name:       v[schemaNameField].(string),
+		Size:       int(size),
+		Properties: getProperties(v),
+	}
 	setOptionalField(&schema.Namespace, v, schemaNamespaceField)
 	return addSchema(getFullName(v[schemaNameField].(string), namespace), schema, registry), nil
 }
 
-func parseUnionSchema(v []interface{}, registry map[string]Schema, namespace string) (Schema, error) {
+func parseUnionSchema(
+	v []interface{},
+	registry map[string]Schema,
+	namespace string,
+) (Schema, error) {
 	types := make([]Schema, len(v))
 	var err error
 	for i := range v {
@@ -1065,12 +1090,20 @@ func parseUnionSchema(v []interface{}, registry map[string]Schema, namespace str
 	return &UnionSchema{Types: types}, nil
 }
 
-func parseRecordSchema(v map[string]interface{}, registry map[string]Schema, namespace string) (Schema, error) {
+func parseRecordSchema(
+	v map[string]interface{},
+	registry map[string]Schema,
+	namespace string,
+) (Schema, error) {
 	schema := &RecordSchema{Name: v[schemaNameField].(string)}
 	setOptionalField(&schema.Namespace, v, schemaNamespaceField)
 	setOptionalField(&namespace, v, schemaNamespaceField)
 	setOptionalField(&schema.Doc, v, schemaDocField)
-	addSchema(getFullName(v[schemaNameField].(string), namespace), newRecursiveSchema(schema), registry)
+	addSchema(
+		getFullName(v[schemaNameField].(string), namespace),
+		newRecursiveSchema(schema),
+		registry,
+	)
 	fields := make([]*SchemaField, len(v[schemaFieldsField].([]interface{})))
 	for i := range fields {
 		field, err := parseSchemaField(v[schemaFieldsField].([]interface{})[i], registry, namespace)
@@ -1085,7 +1118,11 @@ func parseRecordSchema(v map[string]interface{}, registry map[string]Schema, nam
 	return schema, nil
 }
 
-func parseSchemaField(i interface{}, registry map[string]Schema, namespace string) (*SchemaField, error) {
+func parseSchemaField(
+	i interface{},
+	registry map[string]Schema,
+	namespace string,
+) (*SchemaField, error) {
 	switch v := i.(type) {
 	case map[string]interface{}:
 		name, ok := v[schemaNameField].(string)
@@ -1105,13 +1142,13 @@ func parseSchemaField(i interface{}, registry map[string]Schema, namespace strin
 				// JSON treats all numbers as float64 by default
 				switch schemaField.Type.Type() {
 				case Int:
-					var converted = int32(def.(float64))
+					converted := int32(def.(float64))
 					schemaField.Default = converted
 				case Long:
-					var converted = int64(def.(float64))
+					converted := int64(def.(float64))
 					schemaField.Default = converted
 				case Float:
-					var converted = float32(def.(float64))
+					converted := float32(def.(float64))
 					schemaField.Default = converted
 
 				default:

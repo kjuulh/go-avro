@@ -16,7 +16,7 @@ func TestGenerateSpecificComplexFuzz(t *testing.T) {
 	w := avro.NewDatumWriter(ComplexSchema)
 
 	var buf bytes.Buffer
-	var fixed16 = []byte("0123456789abcdef")
+	fixed16 := []byte("0123456789abcdef")
 
 	writeOut := func(name string, v *Complex) {
 		if v.FixedField == nil {
@@ -31,7 +31,7 @@ func TestGenerateSpecificComplexFuzz(t *testing.T) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		ioutil.WriteFile(folder+name, buf.Bytes(), 0644)
+		ioutil.WriteFile(folder+name, buf.Bytes(), 0o644)
 	}
 
 	writeOut("strings-only.bin", &Complex{
@@ -81,7 +81,7 @@ func TestGenerateGenericFuzz(t *testing.T) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		ioutil.WriteFile(folder+name, buf.Bytes(), 0644)
+		ioutil.WriteFile(folder+name, buf.Bytes(), 0o644)
 	}
 
 	writeOut("strings-only.bin", &Combined{

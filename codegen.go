@@ -250,7 +250,14 @@ func (codegen *CodeGenerator) writeStructSchemaVar(info *recordSchemaInfo) error
 	if err != nil {
 		return err
 	}
-	_, err = buffer.WriteString(fmt.Sprintf("var %s, %s = avro.ParseSchema(`%s`)\n\n", info.schemaVarName, info.schemaErrName, strings.Replace(info.schema.String(), "`", "'", -1)))
+	_, err = buffer.WriteString(
+		fmt.Sprintf(
+			"var %s, %s = avro.ParseSchema(`%s`)\n\n",
+			info.schemaVarName,
+			info.schemaErrName,
+			strings.Replace(info.schema.String(), "`", "'", -1),
+		),
+	)
 	return err
 }
 
@@ -263,7 +270,10 @@ func (codegen *CodeGenerator) writeDoc(prefix string, doc string, buffer *bytes.
 	return err
 }
 
-func (codegen *CodeGenerator) writeStructDefinition(info *recordSchemaInfo, buffer *bytes.Buffer) error {
+func (codegen *CodeGenerator) writeStructDefinition(
+	info *recordSchemaInfo,
+	buffer *bytes.Buffer,
+) error {
 	_, err := buffer.WriteString(fmt.Sprintf("type %s struct {\n", info.typeName))
 	if err != nil {
 		return err
@@ -289,7 +299,9 @@ func (codegen *CodeGenerator) writeStructField(field *SchemaField, buffer *bytes
 		return errors.New("Empty field name.")
 	}
 
-	_, err = buffer.WriteString(fmt.Sprintf("\t%s%s ", strings.ToUpper(field.Name[:1]), field.Name[1:]))
+	_, err = buffer.WriteString(
+		fmt.Sprintf("\t%s%s ", strings.ToUpper(field.Name[:1]), field.Name[1:]),
+	)
 	if err != nil {
 		return err
 	}
@@ -392,7 +404,10 @@ func (codegen *CodeGenerator) writeStructFieldType(schema Schema, buffer *bytes.
 	return err
 }
 
-func (codegen *CodeGenerator) writeStructUnionType(schema *UnionSchema, buffer *bytes.Buffer) error {
+func (codegen *CodeGenerator) writeStructUnionType(
+	schema *UnionSchema,
+	buffer *bytes.Buffer,
+) error {
 	var unionType Schema
 	if schema.Types[0].Type() == Null {
 		unionType = schema.Types[1]
@@ -417,8 +432,18 @@ func (codegen *CodeGenerator) isNullable(schema Schema) bool {
 	}
 }
 
-func (codegen *CodeGenerator) writeStructConstructor(info *recordSchemaInfo, buffer *bytes.Buffer) error {
-	_, err := buffer.WriteString(fmt.Sprintf("func New%s() *%s {\n\treturn &%s{\n", info.typeName, info.typeName, info.typeName))
+func (codegen *CodeGenerator) writeStructConstructor(
+	info *recordSchemaInfo,
+	buffer *bytes.Buffer,
+) error {
+	_, err := buffer.WriteString(
+		fmt.Sprintf(
+			"func New%s() *%s {\n\treturn &%s{\n",
+			info.typeName,
+			info.typeName,
+			info.typeName,
+		),
+	)
 	if err != nil {
 		return err
 	}
@@ -434,7 +459,11 @@ func (codegen *CodeGenerator) writeStructConstructor(info *recordSchemaInfo, buf
 	return err
 }
 
-func (codegen *CodeGenerator) writeStructConstructorField(info *recordSchemaInfo, field *SchemaField, buffer *bytes.Buffer) error {
+func (codegen *CodeGenerator) writeStructConstructorField(
+	info *recordSchemaInfo,
+	field *SchemaField,
+	buffer *bytes.Buffer,
+) error {
 	if !codegen.needWriteField(field) {
 		return nil
 	}
@@ -452,7 +481,11 @@ func (codegen *CodeGenerator) writeStructConstructorField(info *recordSchemaInfo
 	return err
 }
 
-func (codegen *CodeGenerator) writeStructConstructorFieldValue(info *recordSchemaInfo, field *SchemaField, buffer *bytes.Buffer) error {
+func (codegen *CodeGenerator) writeStructConstructorFieldValue(
+	info *recordSchemaInfo,
+	field *SchemaField,
+	buffer *bytes.Buffer,
+) error {
 	var err error
 	switch field.Type.(type) {
 	case *NullSchema:
@@ -585,7 +618,10 @@ func (codegen *CodeGenerator) needWriteField(field *SchemaField) bool {
 	return false
 }
 
-func (codegen *CodeGenerator) writeStructConstructorFieldName(field *SchemaField, buffer *bytes.Buffer) error {
+func (codegen *CodeGenerator) writeStructConstructorFieldName(
+	field *SchemaField,
+	buffer *bytes.Buffer,
+) error {
 	_, err := buffer.WriteString("\t\t")
 	if err != nil {
 		return err
@@ -599,12 +635,23 @@ func (codegen *CodeGenerator) writeStructConstructorFieldName(field *SchemaField
 	return err
 }
 
-func (codegen *CodeGenerator) writeSchemaGetter(info *recordSchemaInfo, buffer *bytes.Buffer) error {
-	_, err := buffer.WriteString(fmt.Sprintf("func (o *%s) Schema() avro.Schema {\n\t", info.typeName))
+func (codegen *CodeGenerator) writeSchemaGetter(
+	info *recordSchemaInfo,
+	buffer *bytes.Buffer,
+) error {
+	_, err := buffer.WriteString(
+		fmt.Sprintf("func (o *%s) Schema() avro.Schema {\n\t", info.typeName),
+	)
 	if err != nil {
 		return err
 	}
-	_, err = buffer.WriteString(fmt.Sprintf("if %s != nil {\n\t\tpanic(%s)\n\t}\n\t", info.schemaErrName, info.schemaErrName))
+	_, err = buffer.WriteString(
+		fmt.Sprintf(
+			"if %s != nil {\n\t\tpanic(%s)\n\t}\n\t",
+			info.schemaErrName,
+			info.schemaErrName,
+		),
+	)
 	if err != nil {
 		return err
 	}

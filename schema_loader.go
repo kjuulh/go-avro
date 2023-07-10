@@ -89,7 +89,7 @@ func loadSchema(basePath, avscPath string, schemas map[string]Schema) (Schema, e
 		if err != nil {
 			text := err.Error()
 			if strings.HasPrefix(text, "Undefined schema:") {
-				typ := text[18:len(text)]
+				typ := text[18:]
 				path := basePath + strings.Replace(typ, ".", "/", -1) + schemaExtension
 
 				_, errDep := loadSchema(basePath, path, schemas)

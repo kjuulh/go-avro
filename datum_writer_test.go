@@ -187,7 +187,9 @@ func TestSpecificDatumTags(t *testing.T) {
 		Map    map[string]string `avro:"mapField"`
 	}
 
-	sch, err := ParseSchema(`{"type":"record","name":"Tagged","namespace":"example.avro","fields":[{"name":"booleanField","type":"boolean"},{"name":"intField","type":"int"},{"name":"longField","type":"long"},{"name":"floatField","type":"float"},{"name":"doubleField","type":"double"},{"name":"bytesField","type":"bytes"},{"name":"stringField","type":"string"},{"name":"nullField","type":"null"},{"name":"arrayField","type":{"type":"array","items":"string"}},{"name":"mapField","type":{"type":"map","values":"string"}}]}`)
+	sch, err := ParseSchema(
+		`{"type":"record","name":"Tagged","namespace":"example.avro","fields":[{"name":"booleanField","type":"boolean"},{"name":"intField","type":"int"},{"name":"longField","type":"long"},{"name":"floatField","type":"float"},{"name":"doubleField","type":"double"},{"name":"bytesField","type":"bytes"},{"name":"stringField","type":"string"},{"name":"nullField","type":"null"},{"name":"arrayField","type":{"type":"array","items":"string"}},{"name":"mapField","type":{"type":"map","values":"string"}}]}`,
+	)
 	assert(t, err, nil)
 
 	buffer := &bytes.Buffer{}
@@ -378,7 +380,7 @@ func BenchmarkEncodeVarint64(b *testing.B) {
 }
 
 func BenchmarkSpecificDatumWriter(b *testing.B) {
-	var c = newComplex()
+	c := newComplex()
 	c.FixedField = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
 	w := NewSpecificDatumWriter()
 	w.SetSchema(c.Schema())

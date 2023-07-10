@@ -27,8 +27,10 @@ type DatumReader interface {
 	Read(v interface{}, dec Decoder) error
 }
 
-var enumSymbolsToIndexCache = make(map[string]map[string]int32)
-var enumSymbolsToIndexCacheLock sync.Mutex
+var (
+	enumSymbolsToIndexCache     = make(map[string]map[string]int32)
+	enumSymbolsToIndexCacheLock sync.Mutex
+)
 
 // GenericEnum is a generic Avro enum representation. This is still subject to change and may be rethought.
 type GenericEnum struct {
@@ -176,7 +178,11 @@ func (reader sDatumReader) findAndSet(v reflect.Value, field *SchemaField, dec D
 	return nil
 }
 
-func (reader sDatumReader) readValue(field Schema, reflectField reflect.Value, dec Decoder) (reflect.Value, error) {
+func (reader sDatumReader) readValue(
+	field Schema,
+	reflectField reflect.Value,
+	dec Decoder,
+) (reflect.Value, error) {
 	switch field.Type() {
 	case Null:
 		return reflect.ValueOf(nil), nil
@@ -220,7 +226,9 @@ func (reader sDatumReader) setValue(field *SchemaField, where reflect.Value, wha
 	}
 }
 
-func (reader sDatumReader) mapPrimitive(readerFunc func() (interface{}, error)) (reflect.Value, error) {
+func (reader sDatumReader) mapPrimitive(
+	readerFunc func() (interface{}, error),
+) (reflect.Value, error) {
 	value, err := readerFunc()
 	if err != nil {
 		return reflect.ValueOf(value), err
@@ -229,7 +237,11 @@ func (reader sDatumReader) mapPrimitive(readerFunc func() (interface{}, error)) 
 	return reflect.ValueOf(value), nil
 }
 
-func (reader sDatumReader) mapArray(field Schema, reflectField reflect.Value, dec Decoder) (reflect.Value, error) {
+func (reader sDatumReader) mapArray(
+	field Schema,
+	reflectField reflect.Value,
+	dec Decoder,
+) (reflect.Value, error) {
 	arrayLength, err := dec.ReadArrayStart()
 	if err != nil {
 		return reflect.ValueOf(arrayLength), err
@@ -262,7 +274,7 @@ func (reader sDatumReader) mapArray(field Schema, reflectField reflect.Value, de
 				current.Set(val)
 			}
 		}
-		//concatenate arrays
+		// concatenate arrays
 		if array.Len() == 0 {
 			array = arrayPart
 		} else {
@@ -276,7 +288,11 @@ func (reader sDatumReader) mapArray(field Schema, reflectField reflect.Value, de
 	return array, nil
 }
 
-func (reader sDatumReader) mapMap(field Schema, reflectField reflect.Value, dec Decoder) (reflect.Value, error) {
+func (reader sDatumReader) mapMap(
+	field Schema,
+	reflectField reflect.Value,
+	dec Decoder,
+) (reflect.Value, error) {
 	mapLength, err := dec.ReadMapStart()
 	if err != nil {
 		return reflect.ValueOf(mapLength), err
@@ -340,7 +356,11 @@ func (reader sDatumReader) mapEnum(field Schema, dec Decoder) (reflect.Value, er
 	enumSymbolsToIndexCacheLock.Unlock()
 
 	if int(enumIndex) >= len(schema.Symbols) {
-		return reflect.Value{}, fmt.Errorf("Enum index %d too high for enum %s", enumIndex, field.GetName())
+		return reflect.Value{}, fmt.Errorf(
+			"Enum index %d too high for enum %s",
+			enumIndex,
+			field.GetName(),
+		)
 	}
 
 	enum := &GenericEnum{
@@ -351,7 +371,11 @@ func (reader sDatumReader) mapEnum(field Schema, dec Decoder) (reflect.Value, er
 	return reflect.ValueOf(enum), nil
 }
 
-func (reader sDatumReader) mapUnion(field Schema, reflectField reflect.Value, dec Decoder) (reflect.Value, error) {
+func (reader sDatumReader) mapUnion(
+	field Schema,
+	reflectField reflect.Value,
+	dec Decoder,
+) (reflect.Value, error) {
 	unionIndex, err := dec.ReadInt()
 	if err != nil {
 		return reflect.ValueOf(unionIndex), err
@@ -371,7 +395,11 @@ func (reader sDatumReader) mapFixed(field Schema, dec Decoder) (reflect.Value, e
 	return reflect.ValueOf(fixed), nil
 }
 
-func (reader sDatumReader) mapRecord(field Schema, reflectField reflect.Value, dec Decoder) (reflect.Value, error) {
+func (reader sDatumReader) mapRecord(
+	field Schema,
+	reflectField reflect.Value,
+	dec Decoder,
+) (reflect.Value, error) {
 	var t reflect.Type
 	switch reflectField.Kind() {
 	case reflect.Ptr, reflect.Array, reflect.Map, reflect.Slice, reflect.Chan:
@@ -396,7 +424,6 @@ func (this sDatumReader) fillRecord(field Schema, record reflect.Value, dec Deco
 			entry := &plan.decodePlan[i]
 			structField := rf.FieldByIndex(entry.index)
 			value, err := entry.dec(structField, dec)
-
 			if err != nil {
 				return err
 			}
@@ -406,7 +433,7 @@ func (this sDatumReader) fillRecord(field Schema, record reflect.Value, dec Deco
 		}
 	} else {
 		recordSchema := field.(*RecordSchema)
-		//ri := record.Interface()
+		// ri := record.Interface()
 		for i := 0; i < len(recordSchema.Fields); i++ {
 			if err := this.findAndSet(record, recordSchema.Fields[i], dec); err != nil {
 				return err
@@ -449,7 +476,7 @@ func (reader *GenericDatumReader) Read(v interface{}, dec Decoder) error {
 		return ErrSchemaNotSet
 	}
 
-	//read the value
+	// read the value
 	value, err := reader.readValue(reader.schema, dec)
 	if err != nil {
 		return err
@@ -461,13 +488,17 @@ func (reader *GenericDatumReader) Read(v interface{}, dec Decoder) error {
 		newValue = newValue.Elem()
 	}
 
-	//set the new value
+	// set the new value
 	rv.Set(newValue)
 
 	return nil
 }
 
-func (reader *GenericDatumReader) findAndSet(record *GenericRecord, field *SchemaField, dec Decoder) error {
+func (reader *GenericDatumReader) findAndSet(
+	record *GenericRecord,
+	field *SchemaField,
+	dec Decoder,
+) error {
 	value, err := reader.readValue(field.Type, dec)
 	if err != nil {
 		return err
@@ -544,7 +575,7 @@ func (reader *GenericDatumReader) mapArray(field Schema, dec Decoder) ([]interfa
 			}
 			arrayPart[i] = val
 		}
-		//concatenate arrays
+		// concatenate arrays
 		concatArray := make([]interface{}, len(array)+int(arrayLength), cap(array)+int(arrayLength))
 		copy(concatArray, array)
 		copy(concatArray, arrayPart)
@@ -584,7 +615,10 @@ func (reader *GenericDatumReader) mapEnum(field Schema, dec Decoder) (*GenericEn
 	return enum, nil
 }
 
-func (reader *GenericDatumReader) mapMap(field Schema, dec Decoder) (map[string]interface{}, error) {
+func (reader *GenericDatumReader) mapMap(
+	field Schema,
+	dec Decoder,
+) (map[string]interface{}, error) {
 	mapLength, err := dec.ReadMapStart()
 	if err != nil {
 		return nil, err

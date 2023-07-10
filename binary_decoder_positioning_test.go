@@ -8,8 +8,16 @@ import (
 	"time"
 )
 
-//this tests whether the decoder is able to sequentially read values and keep track of his position normally
-var primitives = []string{typeBoolean, typeInt, typeLong, typeFloat, typeDouble, typeBytes, typeString}
+// this tests whether the decoder is able to sequentially read values and keep track of his position normally
+var primitives = []string{
+	typeBoolean,
+	typeInt,
+	typeLong,
+	typeFloat,
+	typeDouble,
+	typeBytes,
+	typeString,
+}
 
 func TestPositioning(t *testing.T) {
 	buf, types, expected := getTestData()
@@ -20,42 +28,70 @@ func TestPositioning(t *testing.T) {
 			currentType := types[i]
 			currentExpected := expected[i]
 
-			prefix := fmt.Sprintf("At index %d t=%v expected=%v (previous=%v expected=%v) [%s] ", i, currentType, currentExpected, lastType, lastExpected, tPrefix)
+			prefix := fmt.Sprintf(
+				"At index %d t=%v expected=%v (previous=%v expected=%v) [%s] ",
+				i,
+				currentType,
+				currentExpected,
+				lastType,
+				lastExpected,
+				tPrefix,
+			)
 
 			switch currentType {
 			case typeBoolean:
 				{
 					value, _ := bd.ReadBoolean()
 					if value != currentExpected.(bool) {
-						t.Fatalf(prefix+"Unexpected boolean: expected %v, actual %v\n", currentExpected, value)
+						t.Fatalf(
+							prefix+"Unexpected boolean: expected %v, actual %v\n",
+							currentExpected,
+							value,
+						)
 					}
 				}
 			case typeInt:
 				{
 					value, _ := bd.ReadInt()
 					if value != currentExpected.(int32) {
-						t.Fatalf(prefix+"Unexpected int: expected %v, actual %v\n", currentExpected, value)
+						t.Fatalf(
+							prefix+"Unexpected int: expected %v, actual %v\n",
+							currentExpected,
+							value,
+						)
 					}
 				}
 			case typeLong:
 				{
 					value, _ := bd.ReadLong()
 					if value != currentExpected.(int64) {
-						t.Fatalf(prefix+"Unexpected long: expected %v, actual %v\n", currentExpected, value)
+						t.Fatalf(
+							prefix+"Unexpected long: expected %v, actual %v\n",
+							currentExpected,
+							value,
+						)
 					}
 				}
 			case typeFloat:
 				{
 					value, _ := bd.ReadFloat()
 					if value != currentExpected.(float32) {
-						t.Fatalf(prefix+"Unexpected float: expected %v, actual %v\n", currentExpected, value)
+						t.Fatalf(
+							prefix+"Unexpected float: expected %v, actual %v\n",
+							currentExpected,
+							value,
+						)
 					}
 				}
 			case typeDouble:
 				{
 					value, _ := bd.ReadDouble()
 					if value != currentExpected.(float64) {
-						t.Fatalf(prefix+"Unexpected double: expected %v, actual %v\n", currentExpected, value)
+						t.Fatalf(
+							prefix+"Unexpected double: expected %v, actual %v\n",
+							currentExpected,
+							value,
+						)
 					}
 				}
 			case typeBytes:
@@ -66,7 +102,12 @@ func TestPositioning(t *testing.T) {
 					}
 					for i := 0; i < len(value); i++ {
 						if value[i] != currentExpected.([]byte)[i] {
-							t.Fatalf(prefix+"Unexpected byte at index %d: expected 0x%v, actual 0x%v\n", i, hex.EncodeToString([]byte{buf[i+1]}), hex.EncodeToString([]byte{value[i]}))
+							t.Fatalf(
+								prefix+"Unexpected byte at index %d: expected 0x%v, actual 0x%v\n",
+								i,
+								hex.EncodeToString([]byte{buf[i+1]}),
+								hex.EncodeToString([]byte{value[i]}),
+							)
 						}
 					}
 				}

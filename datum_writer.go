@@ -64,8 +64,10 @@ func (w *anyDatumWriter) Write(obj interface{}, enc Encoder) error {
 }
 
 // coerce interfaces
-var _ DatumWriter = (*GenericDatumWriter)(nil)
-var _ DatumWriter = (*SpecificDatumWriter)(nil)
+var (
+	_ DatumWriter = (*GenericDatumWriter)(nil)
+	_ DatumWriter = (*SpecificDatumWriter)(nil)
+)
 
 // SpecificDatumWriter implements DatumWriter and is used for writing Go structs in Avro format.
 type SpecificDatumWriter struct {
@@ -213,7 +215,7 @@ func (writer *SpecificDatumWriter) writeArray(v reflect.Value, enc Encoder, s Sc
 		return nil
 	}
 
-	//TODO should probably write blocks of some length
+	// TODO should probably write blocks of some length
 	enc.WriteArrayStart(int64(v.Len()))
 	for i := 0; i < v.Len(); i++ {
 		if err := writer.write(v.Index(i), enc, s.(*ArraySchema).Items); err != nil {
@@ -234,7 +236,7 @@ func (writer *SpecificDatumWriter) writeMap(v reflect.Value, enc Encoder, s Sche
 		enc.WriteMapNext(0)
 		return nil
 	}
-	//TODO should probably write blocks of some length
+	// TODO should probably write blocks of some length
 	enc.WriteMapStart(int64(v.Len()))
 	for _, key := range v.MapKeys() {
 		err := writer.writeString(key, enc, &StringSchema{})
@@ -286,7 +288,11 @@ func (writer *SpecificDatumWriter) writeFixed(v reflect.Value, enc Encoder, s Sc
 
 func (writer *SpecificDatumWriter) writeRecord(v reflect.Value, enc Encoder, s Schema) error {
 	if !s.Validate(v) {
-		return fmt.Errorf("Encoding Record %s: Invalid record value: %v", s.GetName(), v.Interface())
+		return fmt.Errorf(
+			"Encoding Record %s: Invalid record value: %v",
+			s.GetName(),
+			v.Interface(),
+		)
 	}
 
 	rs := assertRecordSchema(s)
@@ -454,7 +460,7 @@ func (writer *GenericDatumWriter) writeArray(v interface{}, enc Encoder, s Schem
 		return nil
 	}
 
-	//TODO should probably write blocks of some length
+	// TODO should probably write blocks of some length
 	enc.WriteArrayStart(int64(rv.Len()))
 	for i := 0; i < rv.Len(); i++ {
 		err := writer.write(rv.Index(i).Interface(), enc, s.(*ArraySchema).Items)
@@ -478,7 +484,7 @@ func (writer *GenericDatumWriter) writeMap(v interface{}, enc Encoder, s Schema)
 		return nil
 	}
 
-	//TODO should probably write blocks of some length
+	// TODO should probably write blocks of some length
 	enc.WriteMapStart(int64(rv.Len()))
 	for _, key := range rv.MapKeys() {
 		err := writer.writeString(key.Interface(), enc)
@@ -568,7 +574,7 @@ func (writer *GenericDatumWriter) isWritableAs(v interface{}, s Schema) bool {
 	case *EnumSchema:
 		_, ok = v.(*GenericEnum)
 	case *UnionSchema:
-		panic("Nested unions not supported") //this is a part of spec: http://avro.apache.org/docs/current/spec.html#binary_encode_complex
+		panic("Nested unions not supported") // this is a part of spec: http://avro.apache.org/docs/current/spec.html#binary_encode_complex
 	case *RecordSchema:
 		_, ok = v.(*GenericRecord)
 	case *preparedRecordSchema:

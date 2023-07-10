@@ -1,3 +1,4 @@
+//go:build gofuzz
 // +build gofuzz
 
 package specificreadercomplex
@@ -9,9 +10,11 @@ import (
 	"github.com/kjuulh/go-avro/fuzzes"
 )
 
-var buf bytes.Buffer
-var reader = avro.NewSpecificDatumReader().SetSchema(fuzzes.ComplexSchema)
-var prepared = avro.NewSpecificDatumReader().SetSchema(avro.Prepare(fuzzes.ComplexSchema))
+var (
+	buf      bytes.Buffer
+	reader   = avro.NewSpecificDatumReader().SetSchema(fuzzes.ComplexSchema)
+	prepared = avro.NewSpecificDatumReader().SetSchema(avro.Prepare(fuzzes.ComplexSchema))
+)
 
 func Fuzz(input []byte) int {
 	var dest fuzzes.Complex

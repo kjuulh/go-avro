@@ -58,8 +58,10 @@ type Decoder interface {
 	ReadFixed([]byte) error
 }
 
-const maxIntBufSize = 5
-const maxLongBufSize = 10
+const (
+	maxIntBufSize  = 5
+	maxLongBufSize = 10
+)
 
 // BinaryDecoder implements Decoder and provides low-level support for deserializing Avro values.
 type binaryDecoder struct {
@@ -266,7 +268,7 @@ func (bdr *binaryDecoderReader) ReadBoolean() (bool, error) {
 
 // ReadBytes reads a bytes value. Returns a decoded value and an error if it occurs.
 func (bd *binaryDecoder) ReadBytes() ([]byte, error) {
-	//TODO make something with these if's!!
+	// TODO make something with these if's!!
 	if err := checkEOF(bd.buf, bd.pos, 1); err != nil {
 		return nil, ErrUnexpectedEOF
 	}

@@ -18,6 +18,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/kjuulh/go-avro"
 )
 
@@ -236,5 +237,4 @@ func main() {
 		panic("Something went terribly wrong!")
 	}
 	fmt.Printf("Read a primitive value: %s\n", decodedPrimitive)
-
 }

@@ -65,6 +65,7 @@ func (job *prepareJob) prepareArraySchema(input *ArraySchema) Schema {
 		Items:      job.prepare(input.Items),
 	}
 }
+
 func (job *prepareJob) prepareMapSchema(input *MapSchema) Schema {
 	return &MapSchema{
 		Properties: input.Properties,
@@ -75,7 +76,9 @@ func (job *prepareJob) prepareMapSchema(input *MapSchema) Schema {
 func (job *prepareJob) prepareRecordSchema(input *RecordSchema) *preparedRecordSchema {
 	output := &preparedRecordSchema{
 		RecordSchema: *input,
-		pool:         sync.Pool{New: func() interface{} { return make(map[reflect.Type]*recordPlan) }},
+		pool: sync.Pool{
+			New: func() interface{} { return make(map[reflect.Type]*recordPlan) },
+		},
 	}
 	job.seen[input] = output // put the in-progress output here before iterating fields, solves self-recursive and co-recursive.
 	output.Fields = nil
@@ -109,7 +112,11 @@ func (rs *preparedRecordSchema) getPlan(t reflect.Type) (plan *recordPlan, err e
 	for i, schemafield := range rs.Fields {
 		index, ok := ri.names[schemafield.Name]
 		if !ok {
-			err = fmt.Errorf("Type %v does not have field %s required for decoding schema", t, schemafield.Name)
+			err = fmt.Errorf(
+				"Type %v does not have field %s required for decoding schema",
+				t,
+				schemafield.Name,
+			)
 		}
 		entry := &decodePlan[i]
 		entry.schema = schemafield.Type

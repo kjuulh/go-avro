@@ -13,7 +13,7 @@ import (
 // terms of the Apache license, see LICENSE for details.
 // ***********************
 
-//primitives
+// primitives
 type primitive struct {
 	BooleanField bool
 	IntField     int32
@@ -25,8 +25,8 @@ type primitive struct {
 	NullField    interface{}
 }
 
-//TODO replace with encoder <-> decoder tests when decoder is available
-//primitive values predefined test data
+// TODO replace with encoder <-> decoder tests when decoder is available
+// primitive values predefined test data
 var (
 	primitiveBool           = true
 	primitiveInt    int32   = 7498
@@ -63,7 +63,7 @@ func TestPrimitiveBinding(t *testing.T) {
 	}
 }
 
-//complex
+// complex
 type Complex struct {
 	StringArray []string
 	LongArray   []int64
@@ -81,11 +81,28 @@ type testRecord struct {
 	FloatRecordField  float32
 }
 
-//TODO replace with encoder <-> decoder tests when decoder is available
-//predefined test data for complex types
+// TODO replace with encoder <-> decoder tests when decoder is available
+// predefined test data for complex types
 var (
-	complexUnion                = "union value"
-	complexFixed                = []byte{0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04}
+	complexUnion = "union value"
+	complexFixed = []byte{
+		0x01,
+		0x02,
+		0x03,
+		0x04,
+		0x01,
+		0x02,
+		0x03,
+		0x04,
+		0x01,
+		0x02,
+		0x03,
+		0x04,
+		0x01,
+		0x02,
+		0x03,
+		0x04,
+	}
 	complexRecordLong   int64   = 1925639126735
 	complexRecordString         = "I am a test record"
 	complexRecordInt    int32   = 666
@@ -161,7 +178,7 @@ func TestComplexBinding(t *testing.T) {
 	}
 }
 
-//complex within complex
+// complex within complex
 type complexOfComplex struct {
 	ArrayStringArray  [][]string
 	RecordArray       []testRecord
@@ -275,6 +292,7 @@ func TestComplexOfComplexBinding(t *testing.T) {
 func TestSpecificSelfRecursive_NoPrepare(t *testing.T) {
 	specificSelfRecursive(t, false)
 }
+
 func TestSpecificSelfRecursive_Prepare(t *testing.T) {
 	specificSelfRecursive(t, true)
 }
@@ -300,8 +318,8 @@ func specificSelfRecursive(t *testing.T, prepare bool) {
 		Label: "outer",
 		B:     &SelfRecursive{Label: "inner"},
 		C: []*SelfRecursive{
-			&SelfRecursive{Label: "arrayInner1"},
-			&SelfRecursive{Label: "arrayInner2", B: &SelfRecursive{Label: "inner2Child"}},
+			{Label: "arrayInner1"},
+			{Label: "arrayInner2", B: &SelfRecursive{Label: "inner2Child"}},
 		},
 	})
 
@@ -324,6 +342,7 @@ func specificSelfRecursive(t *testing.T, prepare bool) {
 func TestSpecificCoRecursive_NoPrepare(t *testing.T) {
 	specificCoRecursive(t, false)
 }
+
 func TestSpecificCoRecursive_Prepare(t *testing.T) {
 	specificCoRecursive(t, true)
 }
@@ -346,7 +365,6 @@ type crItemC struct {
 }
 
 func specificCoRecursive(t *testing.T, prepare bool) {
-
 	schema := maybePrepare(prepare, MustParseSchema(`{
 	    "type": "record",
 		"name": "CoRecursive",
@@ -383,7 +401,7 @@ func specificCoRecursive(t *testing.T, prepare bool) {
 		B: &crFriend{
 			Label: "inner",
 			D:     &coRecursive{A: "co-inner-d"},
-			E:     []*coRecursive{&coRecursive{A: "co-inner-e"}},
+			E:     []*coRecursive{{A: "co-inner-e"}},
 		},
 		C: &crItemC{
 			Label: "itemC",
@@ -408,7 +426,6 @@ func specificCoRecursive(t *testing.T, prepare bool) {
 	assert(t, dest.B.E[0].A, "co-inner-e")
 	assert(t, dest.C.Label, "itemC")
 	assert(t, dest.C.Ref.Label, "requiredCRef")
-
 }
 
 // TestSpecificArrayCrash tests against regression of a crash scenario
@@ -454,7 +471,6 @@ func TestSpecificArrayCrash(t *testing.T) {
 	assert(t, dest.A[0], "foo")
 	assert(t, dest.A[1], nil)
 	assert(t, dest.A[2], int64(7))
-
 }
 
 func TestSpecificReaderMapOfRecords(t *testing.T) {
@@ -491,8 +507,8 @@ func TestSpecificReaderMapOfRecords(t *testing.T) {
 	writer.SetSchema(schema)
 	testVal := &PtrRec{
 		A: map[string]*Inner{
-			"abc": &Inner{InnerA: 7},
-			"def": &Inner{InnerA: 9},
+			"abc": {InnerA: 7},
+			"def": {InnerA: 9},
 		},
 	}
 	writer.Write(testVal, NewBinaryEncoder(&buf))
@@ -585,6 +601,7 @@ var schemaEnumA = MustParseSchema(`
 	 "fields": [
         {"name": "type", "type": {"type": "enum", "name": "Type", "symbols":["HEART", "SPADE", "CLUB"]}}
      ]}`)
+
 var schemaEnumB = MustParseSchema(`
 	{"type": "record", "name": "Car",
 	 "fields": [
@@ -612,26 +629,25 @@ func enumRaceTest(t *testing.T, schemas []Schema) {
 		err := reader.Read(&dest, NewBinaryDecoder(buf.Bytes()))
 		assert(t, err, nil)
 	})
-
 }
 
 func TestEnumNegativeRegression(t *testing.T) {
 	var playingCard struct {
 		Type *GenericEnum
 	}
-	var genericDest = NewGenericRecord(schemaEnumA)
+	genericDest := NewGenericRecord(schemaEnumA)
 	reader := NewDatumReader(schemaEnumA)
 
 	///////////
 	// Scenario 1: negative index
 
-	var buf = []byte{0x7} // This is the encoding of the varint -4
+	buf := []byte{0x7} // This is the encoding of the varint -4
 	// Before this fix, this panicked.
 	err := reader.Read(genericDest, NewBinaryDecoder(buf))
 	assert(t, err.Error(), "Enum index -4 < 0 in schema Type")
 
 	err = reader.Read(&playingCard, NewBinaryDecoder(buf))
-	//assert(t, err.Error(), "Enum index -4 < 0 in schema Type")
+	// assert(t, err.Error(), "Enum index -4 < 0 in schema Type")
 
 	///////////
 	// Scenario 2: too-large positive index
@@ -643,7 +659,6 @@ func TestEnumNegativeRegression(t *testing.T) {
 	playingCard.Type = nil
 	err = reader.Read(&playingCard, NewBinaryDecoder(buf))
 	assert(t, err.Error(), "Enum index 60 too high for enum Type")
-
 }
 
 func parallelF(numRoutines, numLoops int, f func(routine, loop int)) {
@@ -774,11 +789,22 @@ func specificDecoderBench(b *testing.B, schema Schema, buf []byte, destFunc func
 	specificDecoderBenchGeneric(b, schema, buf, destFunc, false)
 }
 
-func specificDecoderBenchReader(b *testing.B, schema Schema, buf []byte, destFunc func() interface{}) {
+func specificDecoderBenchReader(
+	b *testing.B,
+	schema Schema,
+	buf []byte,
+	destFunc func() interface{},
+) {
 	specificDecoderBenchGeneric(b, schema, buf, destFunc, true)
 }
 
-func specificDecoderBenchGeneric(b *testing.B, schema Schema, buf []byte, destFunc func() interface{}, ioReader bool) {
+func specificDecoderBenchGeneric(
+	b *testing.B,
+	schema Schema,
+	buf []byte,
+	destFunc func() interface{},
+	ioReader bool,
+) {
 	b.ReportAllocs()
 	datumReader := NewSpecificDatumReader()
 	datumReader.SetSchema(schema)

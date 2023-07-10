@@ -100,7 +100,7 @@ func NewComplexEnumField() *avro.GenericEnum {
 	return avro.NewGenericEnum(ComplexEnumSymbols)
 }
 
-//complex
+// complex
 type Complex struct {
 	StringArray []string
 	LongArray   []int64

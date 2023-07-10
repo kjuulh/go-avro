@@ -96,7 +96,6 @@ func NewDataFileReader(filename string, ignoreMe ...DatumReader) (*DataFileReade
 		f.Close()
 	}
 	return reader, err
-
 }
 
 func newDataFileReader(input io.Reader) (reader *DataFileReader, err error) {
@@ -313,7 +312,11 @@ type DataFileWriter struct {
 
 // NewDataFileWriter creates a new DataFileWriter for given output and schema using the given DatumWriter to write the data to that Writer.
 // May return an error if writing fails.
-func NewDataFileWriter(output io.Writer, schema Schema, datumWriter DatumWriter) (writer *DataFileWriter, err error) {
+func NewDataFileWriter(
+	output io.Writer,
+	schema Schema,
+	datumWriter DatumWriter,
+) (writer *DataFileWriter, err error) {
 	encoder := newBinaryEncoder(output)
 	switch w := datumWriter.(type) {
 	case *SpecificDatumWriter:

@@ -19,7 +19,7 @@ func TestDataFileWriter(t *testing.T) {
 	d := 5.0
 
 	// test size growth of underlying file with respect to flushes
-	var sizes = []int{
+	sizes := []int{
 		884, 884, 936, 936, 988, 988,
 		1040, 1040, 1092, 1092,
 	}
