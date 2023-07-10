@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.0 (2023-07-10)
+
+
+### Features
+
+* change to master branch ([f84b009](https://github.com/kjuulh/go-avro/commit/f84b009ebba6b686e6753aa4965e7fb31f067d00))
+* test commit ([39cac0c](https://github.com/kjuulh/go-avro/commit/39cac0c3e1f1fc8398f933db88d38c74a8e5c3af))
+* update with fork name ([6814c66](https://github.com/kjuulh/go-avro/commit/6814c660ad835ef097d41afa35a12a9510dede19))
+* with workflow ([9b1635d](https://github.com/kjuulh/go-avro/commit/9b1635df220136e80a6d6ccd149e29b2ea8eb597))
+
+
+### Bug Fixes
+
+* don't panic for out-of-range on corrupted union decoding. ([18b258d](https://github.com/kjuulh/go-avro/commit/18b258d6b1d69766c5cb561ae8bdd8d93d320617)), closes [#10](https://github.com/kjuulh/go-avro/issues/10)
+
+## Changelog
+
 #### Version 0.3 (2017-12-17)
 
 API Changes:
